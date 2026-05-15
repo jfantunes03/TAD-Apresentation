@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Business Intelligence in Global Geopolitics</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="deck" aria-live="polite">
+      <section class="slide cover active" data-title="Cover">
+        <div class="slide-bg-map" aria-hidden="true"></div>
+        <div class="cover-layout">
+          <div class="cover-copy">
+            <p class="eyebrow">Data Analysis Technologies - 2026</p>
+            <h1>Business Intelligence in Global Geopolitics</h1>
+            <p class="subtitle">Spatiotemporal Analysis of Conflicts and Arms Flows</p>
+            <div class="meta-line">
+              <span>Gabriel Pinto</span>
+              <span>João Fonseca</span>
+              <span>José Cunha</span>
+            </div>
+            <div class="signal-strip reveal">
+              <span><strong>385,918</strong> conflict events</span>
+              <span><strong>10,520</strong> arms transfer records</span>
+              <span><strong>8</strong> Power BI pages</span>
+              <span><strong>2024</strong> predictive test year</span>
+            </div>
+          </div>
+          <aside class="qr-panel">
+            <div id="qrMount" class="qr-box" aria-label="Power BI QR code"></div>
+            <p class="qr-label">Power BI public report</p>
+            <p id="qrStatus" class="qr-status">Power BI public link configured</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="slide questions" data-title="Analytical Questions">
+        <div class="section-label">01 - Analytical framing</div>
+        <h2>Analytical questions</h2>
+        <div class="question-radar exact-questions">
+          <div class="radar-core reveal">
+            <span>Arms flows</span>
+            <span>+</span>
+            <span>Conflict outcomes</span>
+          </div>
+          <article class="question-card q1 reveal">
+            <strong>1. Arms and fatalities</strong>
+            <p>Which countries receive the largest volumes of arms and which countries register the highest fatality levels?</p>
+          </article>
+          <article class="question-card q2 reveal">
+            <strong>2. Temporal evolution</strong>
+            <p>How do arms deliveries and fatalities evolve over time?</p>
+          </article>
+          <article class="question-card q3 reveal">
+            <strong>3. Delayed association</strong>
+            <p>Are arms delivered in previous years associated with higher conflict intensity in later years?</p>
+          </article>
+          <article class="question-card q4 reveal">
+            <strong>4. Risk and anomalies</strong>
+            <p>Which country-year observations show high-risk or anomalous patterns?</p>
+          </article>
+        </div>
+        <p class="thesis reveal">The objective is not causal attribution. The objective is a defensible BI structure for descriptive analysis, temporal diagnosis and exploratory prioritization.</p>
+      </section>
+
+      <section class="slide" data-title="Data Landscape">
+        <div class="section-label">02 - Data landscape</div>
+        <h2>Two datasets, two grains, one analytical problem</h2>
+        <div class="dataset-layout">
+          <article class="dataset-card reveal">
+            <div class="dataset-head">
+              <span class="dataset-tag arms">Transfer-level dataset</span>
+              <strong>Global Arms Transfer</strong>
+              <em>Based on the SIPRI Arms Transfers Database</em>
+            </div>
+            <div class="metric-row">
+              <span><b>10,520</b> rows</span>
+              <span><b>15</b> columns</span>
+              <span><b>2000-2023</b></span>
+            </div>
+            <p>Each record describes an international transfer: source, target, order date, delivery date, quantity, weapon category, designation, description and coordinates. Updates are expected through new SIPRI releases, normally on a yearly cycle.</p>
+          </article>
+
+          <div class="grain-divider reveal">
+            <span>Transfer-level</span>
+            <i></i>
+            <strong>&ne;</strong>
+            <i></i>
+            <span>Event-level</span>
+          </div>
+
+          <article class="dataset-card reveal">
+            <div class="dataset-head">
+              <span class="dataset-tag conflict">Event-level dataset</span>
+              <strong>UCDP GED v25.1</strong>
+              <em>Uppsala Conflict Data Program, Uppsala University</em>
+            </div>
+            <div class="metric-row">
+              <span><b>385,918</b> rows</span>
+              <span><b>49</b> columns</span>
+              <span><b>1989-2024</b></span>
+            </div>
+            <p>Each record is a georeferenced conflict event with country, region, dates, coordinates, actors, violence type and fatality estimates. The dataset is versioned and updated through recurrent UCDP releases, normally annually.</p>
+          </article>
+        </div>
+        <div class="warning-line reveal">
+          The different grains make direct event-transfer joins analytically unsafe; both domains must be compared at a compatible aggregation level.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Power Query Architecture">
+        <div class="section-label">03 - Power Query architecture</div>
+        <h2>Refresh pipeline inside the PBIX</h2>
+        <figure class="pipeline-only-visual reveal">
+          <img src="assets/pipeline.png" alt="Overall BI pipeline from CSV files to Power Query, model and visualization">
+        </figure>
+      </section>
+
+      <section class="slide" data-title="ETL Transformations">
+        <div class="section-label">04 - ETL process in Power Query</div>
+        <h2>Transformations that made the model defensible</h2>
+        <div class="etl-transformation-grid">
+          <article class="transformation-card reveal">
+            <b>Layered staging</b>
+            <span>Raw CSV queries were separated from clean staging queries, and raw staging was kept out of the final analytical model.</span>
+          </article>
+          <article class="transformation-card reveal">
+            <b>Type and date discipline</b>
+            <span>Explicit conversions created reliable numeric fields, order/delivery keys and conflict start/end date keys.</span>
+          </article>
+          <article class="transformation-card reveal">
+            <b>Country normalization</b>
+            <span><code>CountryAliases</code> reduced failed matches between SIPRI-style names, UCDP country names and non-standard entities.</span>
+          </article>
+          <article class="transformation-card reveal">
+            <b>Model reduction</b>
+            <span>Heavy GED text fields were removed, quality flags were added, and fatality uncertainty was computed from high-low estimates.</span>
+          </article>
+          <article class="transformation-card reveal">
+            <b>Country-year aggregation</b>
+            <span><code>FactCountryYearRisk</code> aggregates conflicts and arms deliveries to <code>CountryKey-Year</code>, avoiding many-to-many overcounting.</span>
+          </article>
+          <article class="transformation-card hot reveal">
+            <b>Lag engineering for diagnosis and prediction</b>
+            <span>Prior-year arms, event and fatality variables were engineered to support temporal diagnosis and the Random Forest predictive layer.</span>
+          </article>
+        </div>
+        <div class="challenge-strip reveal">
+          <span>Main implementation challenges</span>
+          <b>granularity mismatch</b>
+          <b>country aliases</b>
+          <b>temporal mismatch</b>
+          <b>lag variables</b>
+          <b>arms quantity interpretation</b>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Star Schema">
+        <div class="section-label">05 - Star schema and analytical coverage</div>
+        <h2>Fact constellation for heterogeneous geopolitical data</h2>
+        <div class="model-layout schema-brief">
+          <figure class="schema-frame reveal">
+            <img src="assets/star_schema.png" alt="Power BI star schema">
+          </figure>
+          <div class="schema-points">
+            <article class="fact-card reveal"><b>Why these dimensions?</b><span><code>DimCountry</code> and <code>DimDate</code> provide shared geography and time. <code>DimWeapon</code>, <code>DimViolenceType</code> and <code>DimConflict</code> preserve domain-specific context.</span></article>
+            <article class="fact-card reveal"><b>Why these fact tables?</b><span><code>FactArmsTransfer</code> keeps one row per transfer; <code>FactConflictEvent</code> keeps one row per event; <code>FactCountryYearRisk</code> provides the safe integrated grain.</span></article>
+            <article class="fact-card accent reveal"><b>Controlled query logic</b><span>Descriptive questions use the atomic facts: arms rankings from <code>FactArmsTransfer</code> and conflict hotspots from <code>FactConflictEvent</code>. Combined lag and anomaly questions use <code>FactCountryYearRisk</code>, preventing event-transfer over-counting.</span></article>
+            <article class="fact-card reveal"><b>Predictive layer inside Power Query</b><span><code>FactPredictionResult</code> and <code>PredictionFeatureImportance</code> are generated from a Python query executed during Power Query refresh. New datasets can be processed within Power BI, although a configured Python environment is still required.</span></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Diagnostic Data Mining">
+        <div class="section-label">06 - Diagnostic analysis and exploratory data mining</div>
+        <div class="mining-layout">
+          <article class="mining-track reveal">
+            <span class="track-label">01 - Interpretable diagnostic score</span>
+            <h3>Lag variables make the comparison temporally defensible</h3>
+            <p><code>FactCountryYearRisk</code> aggregates both domains to one country in one year. Arms delivered in previous years are then compared with current conflict intensity through engineered lag variables.</p>
+            <div class="track-flow">
+              <span>country-year grain</span><i></i><span>arms lags</span><i></i><span>risk score</span><i></i><span>anomaly shortlist</span>
+            </div>
+          </article>
+          <article class="mining-track predictive reveal">
+            <span class="track-label">02 - Predictive data mining</span>
+            <h3>Random Forest tests historical predictive signal</h3>
+            <p>This is a separate model. It estimates fatalities from historical country-year indicators and stores outputs in <code>FactPredictionResult</code> and <code>PredictionFeatureImportance</code>.</p>
+            <div class="track-flow">
+              <span>historical features</span><i></i><span>Random Forest</span><i></i><span>predicted deaths</span><i></i><span>error analysis</span>
+            </div>
+          </article>
+        </div>
+        <div class="engineered-panel reveal">
+          <b>Engineered variables for diagnostic analysis and exploratory data mining</b>
+          <div class="variable-pills">
+            <span>TotalDeaths</span>
+            <span>TotalEvents</span>
+            <span>TotalArmsDelivered</span>
+            <span class="created">ArmsQty_Lag1</span>
+            <span class="created">ArmsQty_Lag2</span>
+            <span class="created">ArmsQty_Lag3</span>
+            <span class="created">AvgFatalityUncertainty</span>
+            <span class="created">RiskScore</span>
+          </div>
+        </div>
+        <div class="formula-band reveal">
+          <span>Heuristic risk score</span>
+          <code>RiskScore = 0.5 * TotalDeaths + 0.3 * ArmsQty_Lag1 + 0.2 * TotalEvents</code>
+        </div>
+        <div class="mining-output-grid reveal">
+          <article>
+            <b>Diagnostic output</b>
+            <span>Interpretable country-year ranking for anomaly detection and contextual investigation.</span>
+          </article>
+          <article>
+            <b>Predictive output</b>
+            <span>Stored forecast benchmark with actual deaths, predicted deaths and prediction errors.</span>
+          </article>
+          <article class="boundary">
+            <b>Interpretation boundary</b>
+            <span>Both components produce analytical signals; neither component is evidence of causality.</span>
+          </article>
+          <article>
+            <b>Risk score inputs</b>
+            <span>Severity, previous-year arms exposure and event frequency are combined transparently.</span>
+          </article>
+          <article>
+            <b>Predictive features</b>
+            <span>Lagged events, lagged deaths, arms lags and historical windows feed the model.</span>
+          </article>
+          <article>
+            <b>Analyst workflow</b>
+            <span>Rank the signal, inspect dashboards, then validate interpretation with external evidence.</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Dashboards">
+        <div class="section-label">07 - Power BI intelligence surface</div>
+        <h2>The report as an investigation workflow</h2>
+        <div class="dashboard-grid">
+          <article class="dash-tile reveal">
+            <img src="assets/overview.png" alt="Overview dashboard">
+            <strong>Overview</strong>
+            <span>global orientation</span>
+          </article>
+          <article class="dash-tile reveal">
+            <img src="assets/risk.png" alt="Risk and anomalies dashboard">
+            <strong>Risk / Anomalies</strong>
+            <span>country-year triage</span>
+          </article>
+          <article class="dash-tile reveal">
+            <img src="assets/conflict.png" alt="Conflict hotspots dashboard">
+            <strong>Conflict Hotspots</strong>
+            <span>spatial intensity</span>
+          </article>
+          <article class="dash-tile reveal">
+            <img src="assets/temporal.png" alt="Temporal diagnosis dashboard">
+            <strong>Temporal Diagnosis</strong>
+            <span>lags and timelines</span>
+          </article>
+          <article class="dash-tile reveal">
+            <img src="assets/arms_flow.png" alt="Arms flows dashboard">
+            <strong>Arms Flows</strong>
+            <span>suppliers, importers, categories</span>
+          </article>
+          <article class="dash-tile reveal">
+            <img src="assets/validation.png" alt="Validation dashboard">
+            <strong>Validation</strong>
+            <span>row counts and unmatched keys</span>
+          </article>
+          <article class="dash-tile reveal">
+            <img src="assets/conflict_actors.png" alt="Conflict actors dashboard">
+            <strong>Conflict Actors</strong>
+            <span>dyads, SideA, SideB</span>
+          </article>
+          <article class="dash-tile reveal">
+            <img src="assets/prediction.png" alt="Predictive model dashboard">
+            <strong>Predictive Model</strong>
+            <span>forecast benchmark</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Diagnostic Layer">
+        <div class="section-label">08 - Diagnostic layer</div>
+        <h2>From global monitoring to anomalous country-years</h2>
+        <div class="diagnosis-layout">
+          <figure class="large-visual reveal">
+            <img src="assets/temporal.png" alt="Temporal diagnosis page">
+          </figure>
+          <div class="diagnosis-copy">
+            <div class="diagnosis-node reveal">
+              <b>Same-year comparison is insufficient</b>
+              <span>Arms may be ordered before delivery, stored for years, captured, produced domestically or absent from official transfer records.</span>
+            </div>
+            <div class="diagnosis-node reveal">
+              <b>Lag variables are the methodological control</b>
+              <span><code>ArmsQty_Lag1</code>, <code>Lag2</code> and <code>Lag3</code> compare previous deliveries with current conflict intensity.</span>
+            </div>
+            <div class="diagnosis-node alert reveal">
+              <b>Risk is only a triage alert</b>
+              <span>The score highlights country-years where fatalities, events and prior arms deliveries co-occur. This may suggest correlation for investigation, but it does not prove a real causal relationship.</span>
+            </div>
+          </div>
+        </div>
+        <p class="thesis small reveal">The diagnostic layer reduces search time and guides the analyst from aggregate patterns to cases requiring external geopolitical evidence.</p>
+      </section>
+
+      <section class="slide" data-title="Predictive Data Mining">
+        <div class="section-label">09 - Predictive data mining with Random Forest</div>
+        <h2>Prediction as an exploratory benchmark</h2>
+        <div class="predictive-layout">
+          <figure class="prediction-shot reveal">
+            <img src="assets/prediction.png" alt="Predictive Model page">
+          </figure>
+          <div class="model-metrics">
+            <div class="metric-card reveal"><span>MAE</span><b>377</b></div>
+            <div class="metric-card reveal"><span>RMSE</span><b>3 K</b></div>
+            <div class="metric-card reveal"><span>R2</span><b>0.64</b></div>
+            <div class="metric-card reveal"><span>Bias</span><b>-70 K</b></div>
+          </div>
+        </div>
+        <div class="model-notes reveal">
+          <span>Input grain: country-year</span>
+          <span>Training period: 2000-2023</span>
+          <span>Test year: 2024</span>
+          <span>Target: log1p(TotalDeaths)</span>
+          <span>Top signals: Events_Lag1, Deaths_Lag1, Events_Last3Years</span>
+        </div>
+        <p class="answer-line reveal"><code>FactPredictionResult</code> stores actual deaths, predicted deaths and errors. <code>PredictionFeatureImportance</code> explains the model. Large errors are also analytical signals for contextual investigation.</p>
+      </section>
+
+      <section class="slide" data-title="Product Vision">
+        <div class="section-label">10 - Product vision</div>
+        <h2>An extensible geopolitical BI architecture</h2>
+        <div class="product-layout">
+          <div class="users-panel reveal">
+            <h3>Potential users</h3>
+            <p>Analysts, researchers, decision makers, journalists, international organizations and geopolitical monitoring teams.</p>
+          </div>
+          <div class="update-panel reveal">
+            <h3>Refresh model</h3>
+            <div class="update-flow">
+              <span>replace CSVs</span>
+              <i></i>
+              <span>refresh Power BI</span>
+              <i></i>
+              <span>ETL reapplied</span>
+              <i></i>
+              <span>dashboards rebuilt</span>
+            </div>
+            <p>Expected cadence: mostly yearly, aligned with new SIPRI and UCDP releases.</p>
+          </div>
+          <div class="roadmap-grid">
+            <span class="reveal">sanctions</span>
+            <span class="reveal">GDP</span>
+            <span class="reveal">military expenditure</span>
+            <span class="reveal">alliances</span>
+            <span class="reveal">refugee flows</span>
+            <span class="reveal">socioeconomic indicators</span>
+            <span class="reveal">model comparison</span>
+            <span class="reveal">Power BI Service / Fabric</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide conclusion" data-title="Closing Argument">
+        <div class="section-label">11 - Closing argument</div>
+        <h2>The contribution is the analytical architecture</h2>
+        <div class="closing-grid">
+          <div class="closing-item reveal"><b>Heterogeneous data</b><span>International arms transfers and georeferenced conflict events are integrated without collapsing their original grains.</span></div>
+          <div class="closing-item reveal"><b>Dimensional model</b><span>Shared dimensions, explicit fact grains and reusable measures make the model auditable and interpretable.</span></div>
+          <div class="closing-item reveal"><b>Validation</b><span>Unmatched-key checks and row-count controls support technical credibility.</span></div>
+          <div class="closing-item reveal"><b>Risk and prediction</b><span>Diagnostic triage and predictive benchmarking extend the report beyond descriptive dashboards.</span></div>
+        </div>
+        <p class="final-line reveal">The project should be read as a structured monitoring architecture: it accelerates investigation, but final interpretation remains evidence-based and context-dependent.</p>
+      </section>
+
+      <section class="slide" data-title="Limitations and Future Work">
+        <div class="section-label">12 - Limitations and future work</div>
+        <h2>Methodological caution and next extensions</h2>
+        <div class="limitations-layout">
+          <article class="limitations-panel reveal">
+            <h3>Current limitations</h3>
+            <ul>
+              <li>Temporal coverage differs: conflicts cover 1989-2024, while arms transfers cover 2000-2023.</li>
+              <li>Official arms transfers exclude illicit flows, small arms, captured weapons, domestic production and indirect routes.</li>
+              <li>Fatality estimates contain uncertainty and depend on source quality.</li>
+              <li>Arms quantity is not equivalent across weapon categories.</li>
+              <li>Lag analysis, risk scoring and predictive modelling remain diagnostic and exploratory, not causal.</li>
+            </ul>
+          </article>
+          <article class="limitations-panel reveal">
+            <h3>Future work</h3>
+            <ul>
+              <li>Normalize the risk score so deaths, arms quantities and events contribute on comparable scales.</li>
+              <li>Add socioeconomic, political and security indicators such as GDP, sanctions, alliances, refugee flows and military expenditure.</li>
+              <li>Extend predictive validation with temporal backtesting, model comparison and alternative algorithms.</li>
+            </ul>
+          </article>
+        </div>
+        <p class="final-line reveal">Final message: the dashboards are the visible layer; the reusable BI architecture is the main scientific and technical contribution.</p>
+        <div class="questions-mark reveal">Questions</div>
+      </section>
+    </main>
+
+    <div id="imageZoomOverlay" class="image-zoom-overlay" aria-hidden="true">
+      <div id="imageZoomTitle" class="image-zoom-title"></div>
+      <img id="imageZoomPreview" alt="">
+    </div>
+
+    <div class="deck-ui" aria-hidden="false">
+      <button id="prevBtn" type="button" class="nav-btn" title="Previous slide" aria-label="Previous slide">&lsaquo;</button>
+      <div class="progress-shell" aria-label="Slide progress">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+      <span id="slideCounter" class="slide-counter">1 / 13</span>
+      <button id="fullscreenBtn" type="button" class="nav-btn" title="Fullscreen" aria-label="Fullscreen">F</button>
+      <button id="nextBtn" type="button" class="nav-btn" title="Next step" aria-label="Next step">&rsaquo;</button>
+    </div>
+
+    <script src="vendor/qrcode.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
